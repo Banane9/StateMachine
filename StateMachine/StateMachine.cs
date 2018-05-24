@@ -4,6 +4,6 @@ namespace StateMachine
 {
     public class StateMachine<TStates, TWith>
     {
-
+        private
     }
 }

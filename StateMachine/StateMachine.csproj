@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CompiledFilters" Version="1.0.0" />
+    <PackageReference Include="CompiledFilters" Version="1.0.24" />
   </ItemGroup>
 
 </Project>
