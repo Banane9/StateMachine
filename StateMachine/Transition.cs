@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using CompiledFilters;
 
 namespace StateMachine
 {
-    // Check inheritance of the state type to allow something like ICancelable for commands
-    public abstract class Transition<TStates, TWith>
+    public abstract class Transition<TMachine, TStates, TStateIn, TWith, TStateOut>
+        where TMachine : StateMachine<TStates, TWith>
+        where TStates : MachineState
+        where TStateIn : TStates
+        where TStateOut : TStates
     {
-        public abstract Filter<TransitionAttempt<TStates, TWith>> TransitionFilter { get; }
+        public abstract bool CanTransition(TransitionAttempt<TMachine, TStateIn, TWith> attempt);
 
-        public bool CanTransition(TransitionAttempt<TStates, TWith> transitionAttempt)
-                    => TransitionFilter.GetCompiledFilter()(transitionAttempt);
-
-        public bool CanTransition(TStates state, TWith with)
-            => TransitionFilter.GetCompiledFilter()(new TransitionAttempt<TStates, TWith>(state, with));
-
-        public abstract TStates DoTransition(TransitionAttempt<TStates, TWith> transitionAttempt);
-
-        public TStates DoTransition(TStates state, TWith with)
-            => DoTransition(new TransitionAttempt<TStates, TWith>(state, with));
+        public abstract TStateOut DoTransition(TransitionAttempt<TMachine, TStateIn, TWith> attempt);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace StateMachine
 {
-    public class StateMachine<TStates, TWith>
+    public class StateMachine<TStates, TWith> : IStateMachine<TStates, TWith>
+        where TStates : MachineState
     {
-        private
     }
 }
