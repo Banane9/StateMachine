@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StateMachine.Example.StateMachine.StartState
 {
-    public class ATransition : Transition<ExampleStateMachine, ExampleStates, StartState, string, OtherState.OtherState>
+    public class ATransition : ExampleTransition<StartState, OtherState.OtherState>
     {
         public override bool CanTransition(TransitionAttempt<ExampleStateMachine, StartState, string> attempt)
         {
