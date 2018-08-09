@@ -5,12 +5,12 @@ namespace StateMachine.Example.StateMachine.StartState
 {
     public class BTransition : ExampleTransition<StartState, StartState>
     {
-        public override bool CanTransition(TransitionAttempt<ExampleStateMachine, StartState, string> attempt)
+        public override bool CanTransition(ExampleTransitionAttempt<StartState> attempt)
         {
             return attempt.With.Length <= 5;
         }
 
-        public override StartState DoTransition(TransitionAttempt<ExampleStateMachine, StartState, string> attempt)
+        public override StartState DoTransition(ExampleTransitionAttempt<StartState> attempt)
         {
             return attempt.State;
         }

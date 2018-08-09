@@ -3,21 +3,15 @@ using System.Collections.Generic;
 
 namespace StateMachine
 {
-    public sealed class TransitionAttempt<TMachine, TState, TWith>
-        where TMachine : IStateMachine<TState, TWith>
-        where TState : MachineState
+    public class TransitionAttempt<TMachine, TStates, TStateIn, TWith>
+        where TMachine : StateMachine<TStates, TWith>
+        where TStates : MachineState
+        where TStateIn : TStates
     {
-        public TMachine Machine { get; }
+        public TMachine Machine { get; set; }
 
-        public TState State { get; }
+        public TStateIn State { get; set; }
 
-        public TWith With { get; }
-
-        public TransitionAttempt(TMachine machine, TState state, TWith with)
-        {
-            Machine = machine;
-            State = state;
-            With = with;
-        }
+        public TWith With { get; set; }
     }
 }
