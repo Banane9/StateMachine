@@ -12,6 +12,8 @@ namespace StateMachine.Example.StateMachine.OtherState
 
         public override StartState.StartState DoTransition(ExampleTransitionAttempt<OtherState> attempt)
         {
+            attempt.Machine.Print("You wrote literally anything! Going back to the start state.");
+
             return new StartState.StartState();
         }
     }

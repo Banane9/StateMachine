@@ -8,6 +8,15 @@ namespace StateMachine.Example
         {
             var sm = new ExampleStateMachine();
 
+            Console.Write("Starting state machine, write 'exit' to stop.");
+
+            string read;
+            while ((read = Console.ReadLine()) != "exit")
+            {
+                sm.Transition(read);
+            }
+
+            Console.WriteLine("Press enter to quit.");
             Console.ReadLine();
         }
     }

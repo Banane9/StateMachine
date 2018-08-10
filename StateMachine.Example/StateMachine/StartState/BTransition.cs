@@ -12,6 +12,8 @@ namespace StateMachine.Example.StateMachine.StartState
 
         public override StartState DoTransition(ExampleTransitionAttempt<StartState> attempt)
         {
+            attempt.Machine.Print("You wrote something with no more than 5 characters! Staying in the start state.");
+
             return attempt.State;
         }
     }
