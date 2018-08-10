@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace StateMachine
 {
@@ -49,6 +51,26 @@ namespace StateMachine
         public static bool DerivesFromOrIs(this Type type, Type baseType)
         {
             return type.DerivesFromOrIs(baseType, out var _);
+        }
+
+        public static Func<object> MakeConstructor(this Type type)
+        {
+            var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Single(ctor => ctor.GetParameters().Length == 0);
+
+            return Expression.Lambda<Func<object>>(Expression.Convert(Expression.New(constructor), objType)).Compile();
+        }
+
+        public static Action<object, object> MakePropertySetter(this PropertyInfo property)
+        {
+            var target = Expression.Parameter(objType);
+            var value = Expression.Parameter(objType);
+            var body = Expression.Call(
+                Expression.Convert(target, property.DeclaringType),
+                property.SetMethod,
+                Expression.Convert(value, property.PropertyType));
+
+            return Expression.Lambda<Action<object, object>>(body, target, value).Compile();
         }
     }
 }

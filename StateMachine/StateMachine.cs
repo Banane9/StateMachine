@@ -11,7 +11,7 @@ namespace StateMachine
         private static readonly Type withType = typeof(TWith);
         private readonly Type thisType;
 
-        private readonly Dictionary<Type, Option[]> transitions;
+        private readonly Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]> transitions;
 
         /// <summary>
         /// Creates a new instance of the <see cref="StateMachine{TStates, TWith}"/> class,
@@ -35,7 +35,7 @@ namespace StateMachine
             transitions = buildStateMachine(assemblies);
         }
 
-        private Dictionary<Type, Option[]> buildStateMachine(params Assembly[] assemblies)
+        private Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]> buildStateMachine(params Assembly[] assemblies)
         {
             if (assemblies == null)
                 throw new ArgumentNullException(nameof(assemblies));
@@ -48,7 +48,7 @@ namespace StateMachine
             return transitionsTypes.GroupBy(o => o.StateInType).ToDictionary(g => g.Key, g => g.ToArray());
         }
 
-        private IEnumerable<Option> collectMatchingTransitions(Assembly[] assemblies)
+        private IEnumerable<TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>> collectMatchingTransitions(Assembly[] assemblies)
         {
             return assemblies.SelectMany(assembly =>
                 // Collect all Transitions and their definitions from all assemblies
@@ -66,26 +66,7 @@ namespace StateMachine
                 .Where(r => r.TransitionType.GetGenericArguments()[0].DerivesFromOrIs(thisType))
                 // Filter out transitions without parameterless constructors
                 .Where(r => r.ConcreteType.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Any(ctor => ctor.GetParameters().Length == 0))
-                .Select(r => new Option(r.ConcreteType, r.TransitionType));
-        }
-
-        private sealed class Option
-        {
-            public Type ConcreteTransition { get; }
-            public Type StateInType { get; }
-            public Type TransitionAttempt { get; }
-            public Type TransitionDefinition { get; }
-
-            public Option(Type concreteTransition, Type transitionDefinition)
-            {
-                ConcreteTransition = concreteTransition;
-                TransitionDefinition = transitionDefinition;
-
-                // Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}
-                var genericArguments = transitionDefinition.GetGenericArguments();
-                StateInType = genericArguments[2];
-                TransitionAttempt = genericArguments[5];
-            }
+                .Select(r => new TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>(r.ConcreteType, r.TransitionType));
         }
     }
 }
