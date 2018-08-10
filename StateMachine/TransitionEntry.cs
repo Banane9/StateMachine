@@ -8,20 +8,16 @@ namespace StateMachine
             where TMachine : StateMachine<TStates, TWith>
             where TStates : MachineState
     {
+        private static readonly Type objType = typeof(object);
+
         private static readonly Dictionary<Type, TransitionAttemptBuilder<TMachine, TStates, TWith>> transitionAttemptBuilders =
-            new Dictionary<Type, TransitionAttemptBuilder<TMachine, TStates, TWith>>();
+                    new Dictionary<Type, TransitionAttemptBuilder<TMachine, TStates, TWith>>();
 
         private readonly Func<object, object, bool> canTransition;
         private readonly Func<object, object, TStates> doTransition;
         private readonly object transition;
         public Type ConcreteTransition { get; }
 
-        public bool HasNextInLineStateOut
-        {
-            get { return NextInLineStateOutType != null; }
-        }
-
-        public Type NextInLineStateOutType { get; }
         public Type StateInType { get; }
         public Type StateOutType { get; }
         public Type TransitionAttempt { get; }
@@ -45,10 +41,10 @@ namespace StateMachine
 
             TransitionAttemptBuilder = transitionAttemptBuilders[TransitionAttempt];
 
-            var transitionParam = Expression.Parameter(concreteTransition);
+            var transitionParam = Expression.Parameter(objType);
             var transitionCast = Expression.Convert(transitionParam, concreteTransition);
 
-            var attemptParam = Expression.Parameter(TransitionAttempt);
+            var attemptParam = Expression.Parameter(objType);
             var attemptCast = Expression.Convert(attemptParam, TransitionAttempt);
 
             canTransition = Expression.Lambda<Func<object, object, bool>>(
@@ -65,7 +61,6 @@ namespace StateMachine
                 attemptParam).Compile();
 
             StateOutType = doTransitionMethod.ReturnType;
-            NextInLineStateOutType = StateOutType.BaseType != typeof(TStates).BaseType ? StateOutType.BaseType : null;
         }
 
         public bool CanTransition(object attempt)

@@ -53,6 +53,11 @@ namespace StateMachine
             return type.DerivesFromOrIs(baseType, out var _);
         }
 
+        public static Type GetNextDerivative<TCutOff>(this Type type)
+        {
+            return type != typeof(TCutOff) ? type.BaseType : null;
+        }
+
         public static Func<object> MakeConstructor(this Type type)
         {
             var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
