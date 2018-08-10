@@ -15,7 +15,15 @@ namespace StateMachine
         private readonly Func<object, object, TStates> doTransition;
         private readonly object transition;
         public Type ConcreteTransition { get; }
+
+        public bool HasNextInLineStateOut
+        {
+            get { return NextInLineStateOutType != null; }
+        }
+
+        public Type NextInLineStateOutType { get; }
         public Type StateInType { get; }
+        public Type StateOutType { get; }
         public Type TransitionAttempt { get; }
         public TransitionAttemptBuilder<TMachine, TStates, TWith> TransitionAttemptBuilder { get; }
         public Type TransitionDefinition { get; }
@@ -48,12 +56,16 @@ namespace StateMachine
                 transitionParam,
                 attemptParam).Compile();
 
+            var doTransitionMethod = concreteTransition.GetMethod("DoTransition");
             doTransition = Expression.Lambda<Func<object, object, TStates>>(
                 Expression.Convert(
-                    Expression.Call(transitionCast, concreteTransition.GetMethod("DoTransition"), attemptCast),
+                    Expression.Call(transitionCast, doTransitionMethod, attemptCast),
                     typeof(TStates)),
                 transitionParam,
                 attemptParam).Compile();
+
+            StateOutType = doTransitionMethod.ReturnType;
+            NextInLineStateOutType = StateOutType.BaseType != typeof(TStates).BaseType ? StateOutType.BaseType : null;
         }
 
         public bool CanTransition(object attempt)

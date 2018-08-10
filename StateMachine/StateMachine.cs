@@ -45,7 +45,7 @@ namespace StateMachine
 
             var transitionsTypes = collectMatchingTransitions(assemblies);
 
-            return transitionsTypes.GroupBy(o => o.StateInType).ToDictionary(g => g.Key, g => g.ToArray());
+            return transitionsTypes.GroupBy(entry => entry.StateInType).ToDictionary(g => g.Key, g => g.ToArray());
         }
 
         private IEnumerable<TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>> collectMatchingTransitions(Assembly[] assemblies)
