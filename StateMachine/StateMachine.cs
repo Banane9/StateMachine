@@ -5,11 +5,16 @@ using System.Reflection;
 
 namespace StateMachine
 {
+    /// <summary>
+    /// Represents the abstract base for all state machines. Contains the logic that looks for transitions and handles them.
+    /// </summary>
+    /// <typeparam name="TStates">The base type of the states used by this machine.</typeparam>
+    /// <typeparam name="TWith">The base type of the transition inputs used by this machine.</typeparam>
     public abstract class StateMachine<TStates, TWith>
         where TStates : MachineState
     {
         private static readonly Dictionary<HashSet<Assembly>, Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]>> knownAssemblies =
-            new Dictionary<HashSet<Assembly>, Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]>>(new HashSetEqualityComparer());
+            new Dictionary<HashSet<Assembly>, Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]>>(new HashSetEqualityComparer<Assembly>());
 
         private static readonly Type withType = typeof(TWith);
         private readonly TStates startState;
@@ -57,9 +62,19 @@ namespace StateMachine
             transitions = buildStateMachine(assemblies);
         }
 
+        /// <summary>
+        /// Sets the current state of the machine to the given one.
+        /// </summary>
+        /// <param name="state">The new state to use as the current state.</param>
         public void ForceState(TStates state) => CurrentState = state;
 
-        public bool Transition(TWith with)
+        /// <summary>
+        /// Tries transitioning from the current state with the given input.
+        /// Tries all transitions for the current type of the state, up to the base state type of the machine.
+        /// </summary>
+        /// <param name="with">The input to try and transition with.</param>
+        /// <returns>Whether a transition was successfully executed or not.</returns>
+        public bool TryTransition(TWith with)
         {
             var stateType = CurrentState.GetType();
             do
@@ -78,11 +93,16 @@ namespace StateMachine
                     return true;
                 }
             }
-            while ((stateType = stateType.GetNextDerivative<TStates>()) != null);
+            while ((stateType = stateType.GetNextBaseType<TStates>()) != null);
 
             return false;
         }
 
+        /// <summary>
+        /// Produces or loads the transitions for the given assemblies ordered by type.
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns></returns>
         private Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]> buildStateMachine(params Assembly[] assemblies)
         {
             if (assemblies == null)
@@ -103,6 +123,9 @@ namespace StateMachine
             return knownAssemblies[assemblySet];
         }
 
+        /// <summary>
+        /// Finds all <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/> derivatives in the assemblies that match this state machine.
+        /// </summary>
         private IEnumerable<TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>> collectMatchingTransitions(Assembly[] assemblies)
         {
             return assemblies.SelectMany(assembly =>
@@ -124,17 +147,20 @@ namespace StateMachine
                 .Select(r => new TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>(r.ConcreteType, r.TransitionType));
         }
 
-        private sealed class HashSetEqualityComparer : IEqualityComparer<HashSet<Assembly>>
+        /// <summary>
+        /// Compares <see cref="HashSet{T}"/>s by the elements they contain.
+        /// </summary>
+        private sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
         {
-            public bool Equals(HashSet<Assembly> x, HashSet<Assembly> y)
+            public bool Equals(HashSet<T> x, HashSet<T> y)
             {
                 return x.SetEquals(y);
             }
 
-            public int GetHashCode(HashSet<Assembly> obj)
+            public int GetHashCode(HashSet<T> obj)
             {
-                return obj.Select(assembly => assembly.GetHashCode())
-                    .Aggregate((acc, item) => unchecked(acc + item));
+                return obj.Select(item => item.GetHashCode())
+                    .Aggregate((acc, hash) => unchecked(acc + hash));
             }
         }
     }

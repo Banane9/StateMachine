@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StateMachine
+﻿namespace StateMachine
 {
+    /// <summary>
+    /// Abstract base class for all states. Just because.
+    /// </summary>
     public abstract class MachineState
-    {
-    }
+    { }
 }

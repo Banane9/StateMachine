@@ -10,6 +10,9 @@ namespace StateMachine
     {
         private static readonly Type objType = typeof(object);
 
+        /// <summary>
+        /// Determines whether the current type derives from (not equal to) the given base type.
+        /// </summary>
         public static bool DerivesFrom(this Type type, Type baseType, out Type baseTypeDef)
         {
             var genericDefinition = baseType.IsGenericTypeDefinition;
@@ -30,11 +33,17 @@ namespace StateMachine
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the current type derives from (not equal to) the given base type.
+        /// </summary>
         public static bool DerivesFrom(this Type type, Type baseType)
         {
             return type.DerivesFrom(baseType, out var _);
         }
 
+        /// <summary>
+        /// Determines whether the current type derives from or is equal to the given base type.
+        /// </summary>
         public static bool DerivesFromOrIs(this Type type, Type baseType, out Type baseTypeDef)
         {
             var genericDefinition = baseType.IsGenericTypeDefinition;
@@ -48,16 +57,25 @@ namespace StateMachine
             return type.DerivesFrom(baseType, out baseTypeDef);
         }
 
+        /// <summary>
+        /// Determines whether the current type derives from or is equal to the given base type.
+        /// </summary>
         public static bool DerivesFromOrIs(this Type type, Type baseType)
         {
             return type.DerivesFromOrIs(baseType, out var _);
         }
 
-        public static Type GetNextDerivative<TCutOff>(this Type type)
+        /// <summary>
+        /// Gets the base type of the given type or null if it's equal to TCutOff.
+        /// </summary>
+        public static Type GetNextBaseType<TCutOff>(this Type type)
         {
             return type != typeof(TCutOff) ? type.BaseType : null;
         }
 
+        /// <summary>
+        /// Takes a <see cref="Type"/> and makes a func that creates an instance using the parameterless constructor.
+        /// </summary>
         public static Func<object> MakeConstructor(this Type type)
         {
             var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
@@ -66,6 +84,9 @@ namespace StateMachine
             return Expression.Lambda<Func<object>>(Expression.Convert(Expression.New(constructor), objType)).Compile();
         }
 
+        /// <summary>
+        /// Takes a <see cref="PropertyInfo"/> and makes a setter action for it that takes the instance and the value as parameters (as <see cref="object"/>s).
+        /// </summary>
         public static Action<object, object> MakePropertySetter(this PropertyInfo property)
         {
             var target = Expression.Parameter(objType);

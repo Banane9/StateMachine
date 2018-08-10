@@ -13,7 +13,7 @@ namespace StateMachine.Example
             string read;
             while ((read = Console.ReadLine()) != "exit")
             {
-                sm.Transition(read);
+                sm.TryTransition(read);
             }
 
             Console.WriteLine("Press enter to quit.");
