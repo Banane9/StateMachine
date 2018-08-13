@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageIconUrl>https://banane9.github.io/favicon.ico</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/Banane9/StateMachine</PackageProjectUrl>
+    <Copyright>Banane9</Copyright>
+    <Description>Generic State Machine implementation using reflection to collect Transition implementations.</Description>
+    <PackageTags>state, machine, state machine, generic, reflection</PackageTags>
+    <Company>Banane9</Company>
+    <Authors>Banane9</Authors>
   </PropertyGroup>
 
 </Project>
