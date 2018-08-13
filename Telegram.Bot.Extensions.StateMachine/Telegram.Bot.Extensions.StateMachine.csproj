@@ -2,15 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
+    <Description>Slight extension of the Banane9.StateMachine package for chat bots.</Description>
+    <Copyright>Banane9</Copyright>
+    <PackageLicenseUrl>https://github.com/Banane9/StateMachine/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Banane9/StateMachine</PackageProjectUrl>
+    <PackageIconUrl>https://banane9.github.io/favicon.ico</PackageIconUrl>
+    <PackageTags>state, machine, state machine, generic, reflection, telegram, bot</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Banane9.StateMachine" Version="1.0.0" />
     <PackageReference Include="Telegram.Bot" Version="14.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\StateMachine\StateMachine.csproj" />
   </ItemGroup>
 
 </Project>
