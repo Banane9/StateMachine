@@ -37,6 +37,7 @@ namespace StateMachine
         /// looking for matching <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/>s in the
         /// <see cref="Assembly"/> where the deriving class is defined.
         /// </summary>
+        /// <param name="startState">The state that the state machine starts in.</param>
         protected StateMachine(TStates startState)
         {
             thisType = GetType();
@@ -51,6 +52,7 @@ namespace StateMachine
         /// Creates a new instance of the <see cref="StateMachine{TStates, TWith}"/> class, looking for matching
         /// <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/>s in the given <see cref="Assembly"/>s.
         /// </summary>
+        /// <param name="startState">The state that the state machine starts in.</param>
         /// <param name="assemblies">The <see cref="Assembly"/>s to look for matching Transitions in.</param>
         protected StateMachine(TStates startState, params Assembly[] assemblies)
         {
@@ -74,7 +76,7 @@ namespace StateMachine
         /// </summary>
         /// <param name="with">The input to try and transition with.</param>
         /// <returns>Whether a transition was successfully executed or not.</returns>
-        public bool TryTransition(TWith with)
+        public virtual bool TryTransition(TWith with)
         {
             var stateType = CurrentState.GetType();
             do
@@ -101,8 +103,6 @@ namespace StateMachine
         /// <summary>
         /// Produces or loads the transitions for the given assemblies ordered by type.
         /// </summary>
-        /// <param name="assemblies"></param>
-        /// <returns></returns>
         private Dictionary<Type, TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>[]> buildStateMachine(params Assembly[] assemblies)
         {
             if (assemblies == null)
