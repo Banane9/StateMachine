@@ -6,9 +6,9 @@ using Telegram.Bot.Types;
 namespace Telegram.Bot.Extensions.StateMachine
 {
     /// <summary>
-    /// Represents the abstract base class for state machines that use the <see cref="Message"/>s from a private or group <see cref="Types.Chat"/>.
+    /// Represents the abstract base class for state machines that use the <see cref="Message"/>s from any kind of <see cref="Types.Chat"/>.
     /// </summary>
-    /// <typeparam name="TStates"></typeparam>
+    /// <typeparam name="TStates">The base type of the states used by this machine.</typeparam>
     public abstract class MessageStateMachine<TStates> : StateMachine<TStates, Message>
         where TStates : MachineState
     {
@@ -53,6 +53,8 @@ namespace Telegram.Bot.Extensions.StateMachine
         {
             if (with.Chat.Id != Chat.Id)
                 throw new ArgumentException("Message must be from the chat that this state machine is for!", nameof(with));
+
+            // Update the Chat if it's migrated to supergroup... once those messages actually get to a bot?
 
             return base.TryTransition(with);
         }
