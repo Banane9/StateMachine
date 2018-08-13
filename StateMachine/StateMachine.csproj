@@ -11,6 +11,8 @@
     <PackageTags>state, machine, state machine, generic, reflection</PackageTags>
     <Company>Banane9</Company>
     <Authors>Banane9</Authors>
+    <Product>StateMachine</Product>
+    <PackageId>Banane9.StateMachine</PackageId>
   </PropertyGroup>
 
 </Project>
