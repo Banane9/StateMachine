@@ -83,7 +83,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var sm = new ExampleStateMachine();
+        var sm = new MyStateMachine();
         Console.Write("Starting state machine, write 'exit' to stop.");
 
         string read;
