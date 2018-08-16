@@ -5,14 +5,14 @@ namespace StateMachine.Example.StateMachine.StartState
 {
     public class ATransition : ExampleTransition<StartState, OtherState.OtherState>
     {
-        public override bool CanTransition(ExampleTransitionAttempt<StartState> attempt)
+        public override bool CanTransition(ExampleStateMachine machine, StartState state, string with)
         {
-            return attempt.With.Length > 5;
+            return with.Length > 5;
         }
 
-        public override OtherState.OtherState DoTransition(ExampleTransitionAttempt<StartState> attempt)
+        public override OtherState.OtherState DoTransition(ExampleStateMachine machine, StartState state, string with)
         {
-            attempt.Machine.Print("You wrote something with more than 5 characters! Now going into the other state.");
+            machine.Print("You wrote something with more than 5 characters! Now going into the other state.");
 
             return new OtherState.OtherState();
         }

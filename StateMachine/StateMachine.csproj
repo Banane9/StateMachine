@@ -13,8 +13,9 @@
     <Authors>Banane9</Authors>
     <Product>StateMachine</Product>
     <PackageId>Banane9.StateMachine</PackageId>
-    <Version>1.0.1</Version>
+    <Version>2.0.1</Version>
     <PackageLicenseUrl>https://github.com/Banane9/StateMachine/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageReleaseNotes>Remove TransitionAttempt in favor of 3 arguments.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

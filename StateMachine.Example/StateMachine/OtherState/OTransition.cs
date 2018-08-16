@@ -5,14 +5,14 @@ namespace StateMachine.Example.StateMachine.OtherState
 {
     public class OTransition : ExampleTransition<OtherState, StartState.StartState>
     {
-        public override bool CanTransition(ExampleTransitionAttempt<OtherState> attempt)
+        public override bool CanTransition(ExampleStateMachine machine, OtherState state, string with)
         {
             return true;
         }
 
-        public override StartState.StartState DoTransition(ExampleTransitionAttempt<OtherState> attempt)
+        public override StartState.StartState DoTransition(ExampleStateMachine machine, OtherState state, string with)
         {
-            attempt.Machine.Print("You wrote literally anything! Going back to the start state.");
+            machine.Print("You wrote literally anything! Going back to the start state.");
 
             return new StartState.StartState();
         }

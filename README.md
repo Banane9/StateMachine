@@ -37,39 +37,35 @@ public sealed class OtherState : ExampleStates
 
 
 // not strictly necessary, but makes the following definitions shorter...
-public sealed class MyTransitionAttempt<TStateIn> : TransitionAttempt<MyStateMachine, ExampleStates, TStateIn, string>
-    where TStateIn : ExampleStates
-{ }
-
-public abstract class MyTransition<TStateIn, TStateOut> : Transition<MyStateMachine, ExampleStates, TStateIn, string, TStateOut, MyTransitionAttempt<TStateIn>>
+public abstract class MyTransition<TStateIn, TStateOut> : Transition<MyStateMachine, ExampleStates, TStateIn, string, TStateOut>
     where TStateIn : ExampleStates
     where TStateOut : ExampleStates
 { }
 
 public class StartTransition : MyTransition<StartState, OtherState>
 {
-    public override bool CanTransition(MyTransitionAttempt<StartState> attempt)
+    public override bool CanTransition(ExampleStateMachine machine, StartState state, string with)
     {
         // using int.TryParse as a check for "is this parseable?"
-        return int.TryParse(attempt.With, out var _);
+        return int.TryParse(with, out var _);
     }
 
-    public override OtherState DoTransition(MyTransitionAttempt<StartState> attempt)
+    public override OtherState DoTransition(ExampleStateMachine machine, StartState state, string with)
     {
         attempt.Machine.Print("You wrote something that's a number! Now going into the other state.");
 
-        return new OtherState(int.Parse(attempt.With));
+        return new OtherState(int.Parse(with));
     }
 }
 
 public class OtherTransition : MyTransition<OtherState, StartState>
 {
-    public override bool CanTransition(MyTransitionAttempt<OtherState> attempt)
+    public override bool CanTransition(ExampleStateMachine machine, OtherState state, string with)
     {
         return true;
     }
 
-    public override StartState DoTransition(MyTransitionAttempt<OtherState> attempt)
+    public override StartState DoTransition(ExampleStateMachine machine, OtherState state, string with)
     {
         attempt.Machine.Print("Doesn't matter what you write, " +
             "I'm just going to give you the number you entered before: " + attempt.State.Value);

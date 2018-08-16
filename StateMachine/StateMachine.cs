@@ -86,12 +86,10 @@ namespace StateMachine
 
                 foreach (var transition in transitions[stateType])
                 {
-                    var attempt = transition.TransitionAttemptBuilder.CreateTransitionAttempt(this, CurrentState, with);
-
-                    if (!transition.CanTransition(attempt))
+                    if (!transition.CanTransition(this, CurrentState, with))
                         continue;
 
-                    CurrentState = transition.DoTransition(attempt);
+                    CurrentState = transition.DoTransition(this, CurrentState, with);
                     return true;
                 }
             }
@@ -132,7 +130,7 @@ namespace StateMachine
                 // Collect all Transitions and their definitions from all assemblies
                 assembly.GetTypes().Select(type =>
                     {
-                        var isTransition = type.DerivesFrom(typeof(Transition<,,,,,>), out var transitionDef);
+                        var isTransition = type.DerivesFrom(typeof(Transition<,,,,>), out var transitionDef);
                         return new { IsTransition = isTransition, ConcreteType = type, TransitionType = transitionDef };
                     }))
                 .Where(r => r.IsTransition)

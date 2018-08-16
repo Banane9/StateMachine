@@ -10,18 +10,13 @@ namespace StateMachine
     {
         private static readonly Type objType = typeof(object);
 
-        private static readonly Dictionary<Type, TransitionAttemptBuilder<TMachine, TStates, TWith>> transitionAttemptBuilders =
-                    new Dictionary<Type, TransitionAttemptBuilder<TMachine, TStates, TWith>>();
-
-        private readonly Func<object, object, bool> canTransition;
-        private readonly Func<object, object, TStates> doTransition;
+        private readonly Func<object, TMachine, TStates, TWith, bool> canTransition;
+        private readonly Func<object, TMachine, TStates, TWith, TStates> doTransition;
         private readonly object transition;
         public Type ConcreteTransition { get; }
 
         public Type StateInType { get; }
         public Type StateOutType { get; }
-        public Type TransitionAttempt { get; }
-        public TransitionAttemptBuilder<TMachine, TStates, TWith> TransitionAttemptBuilder { get; }
         public Type TransitionDefinition { get; }
 
         public TransitionEntry(Type concreteTransition, Type transitionDefinition)
@@ -31,46 +26,56 @@ namespace StateMachine
 
             transition = Activator.CreateInstance(concreteTransition);
 
-            // Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}
+            // Transition{TMachine, TStates, TStateIn, TWith, TStateOut}
             var genericArguments = transitionDefinition.GetGenericArguments();
             StateInType = genericArguments[2];
-            TransitionAttempt = genericArguments[5];
-
-            if (!transitionAttemptBuilders.ContainsKey(TransitionAttempt))
-                transitionAttemptBuilders.Add(TransitionAttempt, new TransitionAttemptBuilder<TMachine, TStates, TWith>(TransitionAttempt));
-
-            TransitionAttemptBuilder = transitionAttemptBuilders[TransitionAttempt];
 
             var transitionParam = Expression.Parameter(objType);
             var transitionCast = Expression.Convert(transitionParam, concreteTransition);
 
-            var attemptParam = Expression.Parameter(objType);
-            var attemptCast = Expression.Convert(attemptParam, TransitionAttempt);
+            var machineParam = Expression.Parameter(typeof(TMachine));
 
-            canTransition = Expression.Lambda<Func<object, object, bool>>(
-                Expression.Call(transitionCast, concreteTransition.GetMethod("CanTransition"), attemptCast),
+            var stateParam = Expression.Parameter(typeof(TStates));
+            var stateCast = Expression.Convert(stateParam, StateInType);
+
+            var withParam = Expression.Parameter(typeof(TWith));
+
+            canTransition = Expression.Lambda<Func<object, TMachine, TStates, TWith, bool>>(
+                Expression.Call(transitionCast,
+                    concreteTransition.GetMethod("CanTransition"),
+                    machineParam,
+                    stateCast,
+                    withParam),
                 transitionParam,
-                attemptParam).Compile();
+                machineParam,
+                stateParam,
+                withParam).Compile();
 
             var doTransitionMethod = concreteTransition.GetMethod("DoTransition");
-            doTransition = Expression.Lambda<Func<object, object, TStates>>(
+            doTransition = Expression.Lambda<Func<object, TMachine, TStates, TWith, TStates>>(
                 Expression.Convert(
-                    Expression.Call(transitionCast, doTransitionMethod, attemptCast),
+                    Expression.Call(transitionCast,
+                        doTransitionMethod,
+                        machineParam,
+                        stateCast,
+                        withParam),
                     typeof(TStates)),
                 transitionParam,
-                attemptParam).Compile();
+                machineParam,
+                stateParam,
+                withParam).Compile();
 
             StateOutType = doTransitionMethod.ReturnType;
         }
 
-        public bool CanTransition(object attempt)
+        public bool CanTransition(TMachine machine, TStates state, TWith with)
         {
-            return canTransition(transition, attempt);
+            return canTransition(transition, machine, state, with);
         }
 
-        public TStates DoTransition(object attempt)
+        public TStates DoTransition(TMachine machine, TStates state, TWith with)
         {
-            return doTransition(transition, attempt);
+            return doTransition(transition, machine, state, with);
         }
     }
 }
