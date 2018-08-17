@@ -18,4 +18,8 @@
     <PackageReleaseNotes>Remove TransitionAttempt in favor of 3 arguments.</PackageReleaseNotes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\StateMachine.xml</DocumentationFile>
+  </PropertyGroup>
+
 </Project>

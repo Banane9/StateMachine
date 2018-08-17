@@ -34,6 +34,7 @@ namespace StateMachine
             var transitionCast = Expression.Convert(transitionParam, concreteTransition);
 
             var machineParam = Expression.Parameter(typeof(TMachine));
+            var machineCast = Expression.Convert(machineParam, genericArguments[0]);
 
             var stateParam = Expression.Parameter(typeof(TStates));
             var stateCast = Expression.Convert(stateParam, StateInType);
@@ -43,7 +44,7 @@ namespace StateMachine
             canTransition = Expression.Lambda<Func<object, TMachine, TStates, TWith, bool>>(
                 Expression.Call(transitionCast,
                     concreteTransition.GetMethod("CanTransition"),
-                    machineParam,
+                    machineCast,
                     stateCast,
                     withParam),
                 transitionParam,
@@ -56,7 +57,7 @@ namespace StateMachine
                 Expression.Convert(
                     Expression.Call(transitionCast,
                         doTransitionMethod,
-                        machineParam,
+                        machineCast,
                         stateCast,
                         withParam),
                     typeof(TStates)),

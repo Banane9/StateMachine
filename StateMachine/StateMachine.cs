@@ -34,7 +34,7 @@ namespace StateMachine
 
         /// <summary>
         /// Creates a new instance of the <see cref="StateMachine{TStates, TWith}"/> class,
-        /// looking for matching <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/>s in the
+        /// looking for matching <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut}"/>s in the
         /// <see cref="Assembly"/> where the deriving class is defined.
         /// </summary>
         /// <param name="startState">The state that the state machine starts in.</param>
@@ -50,7 +50,7 @@ namespace StateMachine
 
         /// <summary>
         /// Creates a new instance of the <see cref="StateMachine{TStates, TWith}"/> class, looking for matching
-        /// <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/>s in the given <see cref="Assembly"/>s.
+        /// <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut}"/>s in the given <see cref="Assembly"/>s.
         /// </summary>
         /// <param name="startState">The state that the state machine starts in.</param>
         /// <param name="assemblies">The <see cref="Assembly"/>s to look for matching Transitions in.</param>
@@ -122,7 +122,7 @@ namespace StateMachine
         }
 
         /// <summary>
-        /// Finds all <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}"/> derivatives in the assemblies that match this state machine.
+        /// Finds all <see cref="Transition{TMachine, TStates, TStateIn, TWith, TStateOut}"/> derivatives in the assemblies that match this state machine.
         /// </summary>
         private IEnumerable<TransitionEntry<StateMachine<TStates, TWith>, TStates, TWith>> collectMatchingTransitions(Assembly[] assemblies)
         {
@@ -138,7 +138,7 @@ namespace StateMachine
                 .Where(r => !r.ConcreteType.IsAbstract)
                 // Filter matching Transitions
                 // Everything except for TMachine is checked by the compiler
-                // Transition{TMachine, TStates, TStateIn, TWith, TStateOut, TTransitionAttempt}
+                // Transition{TMachine, TStates, TStateIn, TWith, TStateOut}
                 .Where(r => r.TransitionType.GetGenericArguments()[0].DerivesFromOrIs(thisType))
                 // Filter out transitions without parameterless constructors
                 .Where(r => r.ConcreteType.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Any(ctor => ctor.GetParameters().Length == 0))
